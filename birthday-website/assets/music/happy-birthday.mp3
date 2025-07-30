@@ -1,0 +1,5 @@
+const songs = [
+    { src: 'assets/music/happy-birthday.mp3', title: 'Happy Birthday Song' },
+    { src: 'assets/music/celebration.mp3', title: 'Celebration' },
+    { src: 'assets/music/birthday-party.mp3', title: 'Birthday Party' }
+];

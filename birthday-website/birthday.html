@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Selamat Ulang Tahun! 🎉</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">🎂 Birthday AYYA!!</div>
+      <ul class="nav-menu">
+        <li class="nav-item"><a href="#" class="nav-link active" data-page="home">Beranda</a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="gallery">Galeri</a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="wishes">Ucapan</a></li>
+        <li class="nav-item"><a href="#" class="nav-link" data-page="music">Musik</a></li>
+      </ul>
+      <div class="hamburger"><span class="bar"></span><span class="bar"></span><span class="bar"></span></div>
+    </div>
+  </nav>
+
+  <!-- Music Player (Fixed) -->
+  <div class="music-player">
+    <button id="playPauseBtn" class="play-btn">🎵</button>
+    <span class="music-title" id="currentSong">Happy Birthday</span>
+    <audio id="birthdayAudio" loop></audio>
+  </div>
+
+  <!-- Home Page -->
+  <div class="page active" id="home">
+    <div class="hero-section">
+      <div class="birthday-container">
+        <div class="birthday-cake">🎂</div>
+        <h1 class="birthday-title">Selamat Ulang Tahun AYYA!</h1>
+        <p class="birthday-subtitle">Semoga di hari spesialmu dan umur 21 ini penuh kebahagiaan</p>
+        <div class="balloons">
+          <div class="balloon balloon-1">🎈</div>
+          <div class="balloon balloon-2">🎈</div>
+          <div class="balloon balloon-3">🎈</div>
+          <div class="balloon balloon-4">🎈</div>
+        </div>
+        <button class="celebrate-btn" onclick="celebrate()">Rayakan! 🎉</button>
+      </div>
+    </div>
+  </div>
+
+<!-- Gallery Page -->
+<div class="page" id="gallery">
+  <div class="container">
+    <h2 class="page-title">Galeri Kita!! 📸</h2>
+    <div class="gallery-grid">
+      <div class="gallery-item">
+        <img src="assets/gambar/foto1.jpg" alt="Foto 1" />
+      </div>
+      <div class="gallery-item">
+        <img src="assets/gambar/foto2.jpg" alt="Foto 2" />
+      </div>
+      <div class="gallery-item">
+        <img src="assets/gambar/foto3.jpg" alt="Foto 3" />
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <!-- Wishes Page -->
+  <div class="page" id="wishes">
+    <div class="container">
+      <h2 class="page-title">Ucapan Selamat 💝</h2>
+      <div class="wishes-container"></div>
+      <div class="add-wish">
+        <h3>Tambahkan Ucapan</h3>
+        <form class="wish-form">
+          <input type="text" placeholder="Nama kamu" required />
+          <textarea placeholder="Tulis ucapan selamat..." required></textarea>
+          <button type="submit">Kirim Ucapan 💌</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Music Page -->
+  <div class="page" id="music">
+    <div class="container">
+      <h2 class="page-title">Musik Perayaan 🎵</h2>
+      <div class="music-section">
+        <div class="music-player-large">
+          <button id="prevBtn">⏮️</button>
+          <button id="playPauseLarge" class="play-large">▶️</button>
+          <button id="nextBtn">⏭️</button>
+        </div>
+        <div class="playlist">
+          <h3>Playlist Ulang Tahun</h3>
+          <div class="playlist-item active" data-src="assets/music/hbd.mp3">🎵 Happy Birthday (HBD)</div>
+          <div class="playlist-item" data-src="assets/music/celebration.mp3">🎵 Celebration</div>
+          <div class="playlist-item" data-src="assets/music/birthday-party.mp3">🎵 Birthday Party</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confetti Container -->
+  <div id="confetti-container"></div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const navLinks = document.querySelectorAll('.nav-link');
+      const pages = document.querySelectorAll('.page');
+      const hamburger = document.querySelector('.hamburger');
+      const navMenu = document.querySelector('.nav-menu');
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const page = this.getAttribute('data-page');
+          navLinks.forEach(l => l.classList.remove('active'));
+          pages.forEach(p => p.classList.remove('active'));
+          this.classList.add('active');
+          document.getElementById(page).classList.add('active');
+          navMenu.classList.remove('active');
+        });
+      });
+
+      hamburger.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+      });
+
+      const audio = document.getElementById('birthdayAudio');
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      const playPauseLarge = document.getElementById('playPauseLarge');
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const playlistItems = document.querySelectorAll('.playlist-item');
+      const currentSongTitle = document.getElementById('currentSong');
+
+      let isPlaying = false;
+      let currentSongIndex = 0;
+
+      const songs = [
+        { src: 'assets/music/hbd.mp3', title: 'Happy Birthday (HBD)' },
+        { src: 'assets/music/celebration.mp3', title: 'Celebration' },
+        { src: 'assets/music/birthday-party.mp3', title: 'Birthday Party' }
+      ];
+
+      function loadSong(i) {
+        currentSongIndex = i;
+        audio.src = songs[i].src;
+        currentSongTitle.textContent = songs[i].title;
+        playlistItems.forEach((item, idx) => item.classList.toggle('active', idx === i));
+      }
+
+      function togglePlay() {
+        if (isPlaying) {
+          audio.pause();
+          playPauseBtn.textContent = '🎵';
+          playPauseLarge.textContent = '▶️';
+        } else {
+          audio.play();
+          playPauseBtn.textContent = '⏸️';
+          playPauseLarge.textContent = '⏸️';
+        }
+        isPlaying = !isPlaying;
+      }
+
+      function nextSong() {
+        loadSong((currentSongIndex + 1) % songs.length);
+        if (isPlaying) audio.play();
+      }
+
+      function prevSong() {
+        loadSong((currentSongIndex - 1 + songs.length) % songs.length);
+        if (isPlaying) audio.play();
+      }
+
+      playlistItems.forEach((item, idx) => {
+        item.addEventListener('click', () => {
+          loadSong(idx);
+          if (!isPlaying) togglePlay();
+        });
+      });
+
+      playPauseBtn.addEventListener('click', togglePlay);
+      playPauseLarge.addEventListener('click', togglePlay);
+      nextBtn.addEventListener('click', nextSong);
+      prevBtn.addEventListener('click', prevSong);
+      audio.addEventListener('ended', nextSong);
+
+      function celebrate() {
+        createConfetti();
+        if (!isPlaying) togglePlay();
+      }
+      window.celebrate = celebrate;
+
+      function createConfetti() {
+        const container = document.getElementById('confetti-container');
+        for (let i = 0; i < 30; i++) {
+          const confetti = document.createElement('div');
+          confetti.className = 'confetti';
+          confetti.style.left = Math.random() * 100 + 'vw';
+          confetti.style.backgroundColor = '#'+Math.floor(Math.random()*16777215).toString(16);
+          confetti.style.animationDuration = Math.random() * 2 + 3 + 's';
+          container.appendChild(confetti);
+          setTimeout(() => confetti.remove(), 5000);
+        }
+      }
+
+      const wishForm = document.querySelector('.wish-form');
+      wishForm.addEventListener('submit', e => {
+        e.preventDefault();
+        const name = wishForm.querySelector('input').value;
+        const text = wishForm.querySelector('textarea').value;
+        const wishes = document.querySelector('.wishes-container');
+        wishes.innerHTML += `<div class="wish-card"><p><strong>${name}:</strong> ${text}</p></div>`;
+        wishForm.reset();
+      });
+
+      Swal.fire({
+        title: 'Play background music?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No'
+      }).then(result => {
+        loadSong(0);
+        if (result.isConfirmed) {
+          audio.play();
+          isPlaying = true;
+          playPauseBtn.textContent = '⏸️';
+          playPauseLarge.textContent = '⏸️';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
